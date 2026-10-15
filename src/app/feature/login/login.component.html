@@ -1,0 +1,179 @@
+<div class="login-page" [class.dark-theme]="isDarkTheme">
+  <!-- Left branding section -->
+  <section class="brand-panel">
+    <a class="brand-logo" routerLink="/">
+      <span>FYN</span>TRIVA
+    </a>
+
+    <div class="brand-content">
+      <h1>Stronger<br />Every Day</h1>
+
+      <p class="brand-description">
+        Track your workouts, stay consistent, and achieve your
+        fitness goals with FYNTRIVA.
+      </p>
+
+      <div class="benefits">
+        <div class="benefit">
+          <div class="benefit-icon">🏋️</div>
+          <div>
+            <h3>Track Workouts</h3>
+            <p>Log exercises and monitor progress.</p>
+          </div>
+        </div>
+
+        <div class="benefit">
+          <div class="benefit-icon">📊</div>
+          <div>
+            <h3>See Your Progress</h3>
+            <p>Visualize your results over time.</p>
+          </div>
+        </div>
+
+        <div class="benefit">
+          <div class="benefit-icon">🎯</div>
+          <div>
+            <h3>Achieve Your Goals</h3>
+            <p>Build healthier habits, one step at a time.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="landscape" aria-hidden="true">
+      <div class="sun"></div>
+      <div class="mountain mountain-back"></div>
+      <div class="mountain mountain-front"></div>
+      <div class="landscape-water"></div>
+    </div>
+  </section>
+
+  <!-- Right login section -->
+  <main class="login-panel">
+<div class="theme-switch">
+  <button
+    type="button"
+    [class.active]="!isDarkTheme"
+    [attr.aria-pressed]="!isDarkTheme"
+    aria-label="Light theme"
+    (click)="setTheme(false)">
+    ☀
+  </button>
+
+  <button
+    type="button"
+    [class.active]="isDarkTheme"
+    [attr.aria-pressed]="isDarkTheme"
+    aria-label="Dark theme"
+    (click)="setTheme(true)">
+    ☾
+  </button>
+</div>
+
+    <section class="login-card">
+      <a class="card-logo" routerLink="/">
+        <span>FYN</span>TRIVA
+      </a>
+
+      <h2>Welcome back</h2>
+      <p class="subtitle">Continue your fitness journey.</p>
+
+      <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+        <div class="form-group">
+          <label for="email">Email address</label>
+
+          <div class="input-wrapper">
+            <span class="input-icon" aria-hidden="true">✉</span>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              required
+              email
+              [(ngModel)]="email"
+              #emailInput="ngModel"
+            />
+          </div>
+
+          @if (emailInput.invalid && emailInput.touched) {
+            <small class="error-message">
+              Enter a valid email address.
+            </small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+
+          <div class="input-wrapper">
+            <span class="input-icon" aria-hidden="true">🔒</span>
+            <input
+              id="password"
+              name="password"
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Enter your password"
+              autocomplete="current-password"
+              required
+              [(ngModel)]="password"
+              #passwordInput="ngModel"
+            />
+
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="togglePassword()"
+              [attr.aria-label]="
+                showPassword ? 'Hide password' : 'Show password'
+              "
+            >
+              {{ showPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+
+          @if (passwordInput.invalid && passwordInput.touched) {
+            <small class="error-message">
+              Password is required.
+            </small>
+          }
+
+          <div class="forgot-password">
+            <a routerLink="/forgot-password">Forgot password?</a>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="sign-in-button"
+          [disabled]="loginForm.invalid"
+        >
+          Sign in
+        </button>
+      </form>
+
+      <div class="divider">
+        <span></span>
+        <p>or</p>
+        <span></span>
+      </div>
+
+      <div class="social-buttons">
+        <button type="button" class="social-button">
+          <span class="google-icon">G</span>
+          Continue with Google
+        </button>
+
+        <button type="button" class="social-button">
+          <span class="apple-icon">●</span>
+          Continue with Apple
+        </button>
+      </div>
+
+      <p class="signup-prompt">
+        Don't have an account?
+        <a routerLink="/sign-up">Sign up</a>
+      </p>
+    </section>
+  </main>
+</div>

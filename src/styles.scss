@@ -1,1 +1,47 @@
-/* You can add global styles to this file, and also import other style files */
+
+/* Global reset */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  width: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  overflow-x: hidden;
+  background: var(--page-bg);
+  color: var(--text-primary);
+}
+
+/* Light theme */
+:root {
+  color-scheme: light;
+
+  --page-bg: #f8f9fd;
+  --card-bg: #ffffff;
+  --text-primary: #171a2b;
+  --text-secondary: #777f9c;
+  --border-color: #e1e5ef;
+  --accent: #6548e8;
+  --accent-hover: #5137cf;
+  --field-bg: #ffffff;
+}
+
+/* Dark theme */
+:root.dark-theme {
+  color-scheme: dark;
+
+  --page-bg: #15161c;
+  --card-bg: #20212a;
+  --text-primary: #f4f4fa;
+  --text-secondary: #a7a8b8;
+  --border-color: #41424e;
+  --accent: #a18bff;
+  --accent-hover: #b2a1ff;
+  --field-bg: #20212a;
+}

@@ -6,6 +6,18 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+  <script>
+    try {
+      const theme = localStorage.getItem('fyntriva-theme');
+
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark-theme');
+      }
+    } catch (error) {
+      // Continue with the default light theme
+    }
+  </script>
 </head>
 <body>
   <app-root></app-root>
