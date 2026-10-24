@@ -1,5 +1,7 @@
 
 /* Global reset */
+@use './app/feature/home/home.component';
+
 html,
 body {
   margin: 0;

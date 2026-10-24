@@ -1,9 +1,5 @@
-:host {
-  display: block;
-  min-height: 100vh;
-}
-
-* {
+.dashboard,
+.dashboard * {
   box-sizing: border-box;
 }
 
@@ -31,7 +27,11 @@
     outline: 2px solid var(--accent);
     outline-offset: 3px;
   }
-}
+
+  .primary-button,
+  .text-button {
+    text-decoration: none;
+  }
 
 // Sidebar
 
@@ -266,6 +266,24 @@
   gap: 16px;
 }
 
+.tour-replay-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 11px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--accent);
+  background: var(--card-bg);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+
+  &:hover {
+    background: var(--accent-light);
+  }
+}
+
 .today-date {
   color: var(--muted);
   font-size: 12px;
@@ -295,7 +313,7 @@
   }
 }
 
-.dashboard.dark-theme .theme-switch button.active {
+&.dark-theme .theme-switch button.active {
   color: #15161c;
   background: #a18bff;
 }
@@ -1003,6 +1021,160 @@
   font-size: 10px;
 }
 
+// First-run onboarding
+
+.onboarding-backdrop {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(13 14 23 / 58%);
+  backdrop-filter: blur(5px);
+}
+
+.onboarding-dialog {
+  width: min(100%, 490px);
+  padding: clamp(24px, 5vw, 38px);
+  border: 1px solid var(--border-color);
+  border-radius: 22px;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 24%);
+  animation: onboarding-enter 180ms ease-out;
+}
+
+.onboarding-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.onboarding-close {
+  display: grid;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  color: var(--text-secondary);
+  background: transparent;
+  cursor: pointer;
+  font-size: 22px;
+}
+
+.onboarding-progress {
+  display: flex;
+  gap: 7px;
+  margin-top: 28px;
+
+  span {
+    flex: 1;
+    height: 5px;
+    border-radius: 8px;
+    background: var(--border-color);
+
+    &.current,
+    &.complete {
+      background: var(--accent);
+    }
+  }
+}
+
+.onboarding-step-count {
+  margin: 28px 0 8px;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.onboarding-dialog h2 {
+  margin: 0;
+  font-size: clamp(24px, 5vw, 30px);
+  letter-spacing: -0.8px;
+}
+
+.onboarding-dialog > p:not(.onboarding-step-count) {
+  min-height: 52px;
+  margin: 12px 0 26px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.onboarding-actions,
+.onboarding-navigation {
+  display: flex;
+  align-items: center;
+}
+
+.onboarding-actions {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.onboarding-navigation {
+  gap: 9px;
+}
+
+.onboarding-skip,
+.onboarding-back,
+.onboarding-next {
+  min-height: 42px;
+  padding: 0 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.onboarding-skip,
+.onboarding-back {
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  background: transparent;
+}
+
+.onboarding-next {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  color: #ffffff;
+  background: var(--accent);
+}
+
+.onboarding-next:hover {
+  background: var(--accent-hover);
+}
+
+@keyframes onboarding-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .onboarding-dialog {
+    animation: none;
+  }
+}
+
 // Responsive layouts
 
 @media (min-width: 1500px) {
@@ -1070,7 +1242,7 @@
 }
 
 @media (max-width: 650px) {
-  .dashboard {
+  & {
     display: block;
     padding-bottom: 70px;
   }
@@ -1136,6 +1308,14 @@
     gap: 8px;
   }
 
+  .tour-replay-button {
+    padding: 8px;
+  }
+
+  .tour-replay-label {
+    display: none;
+  }
+
   .welcome-section {
     gap: 20px;
     padding-top: 27px;
@@ -1186,4 +1366,5 @@
   .xp-earned {
     font-size: 9px;
   }
+}
 }

@@ -1,13 +1,7 @@
 <div class="dashboard" [class.dark-theme]="isDarkTheme">
-
-  <!-- Sidebar -->
   <aside class="sidebar">
-    <a class="brand-logo" routerLink="/home">
-      <span>FYN</span>TRIVA
-    </a>
-
+    <a class="brand-logo" routerLink="/home/dashboard"><span>FYN</span>TRIVA</a>
     <div class="sidebar-label">WORKSPACE</div>
-
     <nav class="navigation" aria-label="Main navigation">
       @for (item of navigation; track item.label) {
         <button
@@ -18,351 +12,91 @@
           (click)="selectNav(item.label)">
           <span class="nav-icon" aria-hidden="true">{{ item.icon }}</span>
           <span>{{ item.label }}</span>
-
           @if (item.label === 'Missions') {
             <span class="nav-badge">3</span>
           }
         </button>
       }
     </nav>
-
     <div class="sidebar-bottom">
       <div class="upgrade-card">
         <div class="upgrade-icon">✦</div>
         <h3>Unlock your potential</h3>
         <p>Your next level is closer than you think.</p>
-        <button type="button" (click)="selectNav('Missions')">
-          Explore missions <span>→</span>
-        </button>
+        <button type="button" (click)="selectNav('Missions')">Explore missions <span>→</span></button>
       </div>
-
-      <button class="sidebar-profile" type="button"
-              (click)="selectNav('Profile')">
+      <button class="sidebar-profile" type="button" (click)="selectNav('Profile')">
         <div class="avatar">A</div>
-        <div class="profile-info">
-          <strong>{{ userName }}</strong>
-          <span>Level {{ userLevel }} athlete</span>
-        </div>
+        <div class="profile-info"><strong>{{ userName }}</strong><span>Fitness profile</span></div>
         <span class="profile-more">···</span>
       </button>
     </div>
   </aside>
 
-  <!-- Main content -->
   <main class="main-content">
     @if (logoutErrorMessage) {
       <p class="action-note" role="alert">{{ logoutErrorMessage }}</p>
     }
-
-    <!-- Header -->
+    @if (profileStorageErrorMessage) {
+      <p class="profile-error-message" role="alert">{{ profileStorageErrorMessage }}</p>
+    }
     <header class="topbar">
       <div class="breadcrumb">
-        <span>Workspace</span>
-        <span class="breadcrumb-separator">/</span>
-        <strong>{{ activeNav }}</strong>
+        <span>Workspace</span><span class="breadcrumb-separator">/</span><strong>{{ activeNav }}</strong>
       </div>
-
       <div class="topbar-actions">
         <span class="today-date">{{ formattedDate }}</span>
-
+        <button type="button" class="tour-replay-button" (click)="startOnboarding()" aria-label="Take the app tour">
+          <span aria-hidden="true">✦</span><span class="tour-replay-label">Take tour</span>
+        </button>
         <div class="theme-switch" aria-label="Theme selection">
-          <button
-            type="button"
-            [class.active]="!isDarkTheme"
-            [attr.aria-pressed]="!isDarkTheme"
-            aria-label="Light theme"
-            (click)="setTheme(false)">☀</button>
-
-          <button
-            type="button"
-            [class.active]="isDarkTheme"
-            [attr.aria-pressed]="isDarkTheme"
-            aria-label="Dark theme"
-            (click)="setTheme(true)">☾</button>
+          <button type="button" [class.active]="!isDarkTheme" [attr.aria-pressed]="!isDarkTheme" aria-label="Light theme" (click)="setTheme(false)">☀</button>
+          <button type="button" [class.active]="isDarkTheme" [attr.aria-pressed]="isDarkTheme" aria-label="Dark theme" (click)="setTheme(true)">☾</button>
         </div>
-
-        <button
-          type="button"
-          class="logout-button"
-          (click)="logout()"
-          aria-label="Log out"
-          title="Log out">↗</button>
+        <button type="button" class="logout-button" (click)="logout()" aria-label="Log out" title="Log out">↗</button>
       </div>
     </header>
 
-    @if (activeNav === 'Dashboard') {
-      <!-- Welcome -->
-      <section class="welcome-section">
-        <div>
-          <p class="eyebrow">YOUR FITNESS OVERVIEW</p>
-          <h1>{{ greeting }}, {{ userName }} <span>✦</span></h1>
-          <p class="welcome-subtitle">
-            Every rep counts. Let's make today a great one.
-          </p>
-        </div>
-
-        <div class="level-card">
-          <div class="level-emblem">⚡</div>
-          <div class="level-info">
-            <span>YOUR CURRENT RANK</span>
-            <strong>Level {{ userLevel }} <span>ATHLETE</span></strong>
-            <div class="progress-track">
-              <div class="progress-fill" [style.width.%]="xpProgress"></div>
-            </div>
-            <small>{{ currentXp }} / {{ nextLevelXp }} XP to next level</small>
-          </div>
-        </div>
-      </section>
-
-      <!-- Summary cards -->
-      <section class="stats-grid" aria-label="Fitness summary">
-        <article class="stat-card">
-          <div class="stat-top">
-            <span class="stat-icon purple">⚡</span>
-            <span class="stat-label">TOTAL XP</span>
-          </div>
-          <div class="stat-value">{{ currentXp }} <span>XP</span></div>
-          <p class="stat-description">Keep earning experience</p>
-          <div class="mini-progress">
-            <div class="progress-fill" [style.width.%]="xpProgress"></div>
-          </div>
-        </article>
-
-        <article class="stat-card">
-          <div class="stat-top">
-            <span class="stat-icon orange">♨</span>
-            <span class="stat-label">WORKOUT STREAK</span>
-          </div>
-          <div class="stat-value">{{ streakDays }} <span>days</span></div>
-          <p class="stat-description">Consistency builds results</p>
-          <div class="streak-dots" aria-label="Six day streak">
-            @for (day of [1, 2, 3, 4, 5, 6, 7]; track day) {
-              <span [class.completed]="day <= streakDays"></span>
-            }
-          </div>
-        </article>
-
-        <article class="stat-card">
-          <div class="stat-top">
-            <span class="stat-icon green">✓</span>
-            <span class="stat-label">WEEKLY WORKOUTS</span>
-          </div>
-          <div class="stat-value">
-            {{ weeklyWorkouts }}<span>/{{ weeklyWorkoutGoal }}</span>
-          </div>
-          <p class="stat-description">Workouts completed this week</p>
-          <div class="mini-progress">
-            <div class="progress-fill green-fill"
-                 [style.width.%]="weeklyProgress"></div>
-          </div>
-        </article>
-
-        <article class="stat-card">
-          <div class="stat-top">
-            <span class="stat-icon blue">◷</span>
-            <span class="stat-label">ACTIVE MINUTES</span>
-          </div>
-          <div class="stat-value">{{ weeklyMinutes }} <span>min</span></div>
-          <p class="stat-description">Your weekly movement goal</p>
-          <div class="mini-progress">
-            <div class="progress-fill blue-fill"
-                 [style.width.%]="weeklyMinutesProgress"></div>
-          </div>
-        </article>
-      </section>
-
-      <!-- Workout and weekly activity -->
-      <section class="middle-grid">
-
-        <article class="panel workout-panel">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">READY WHEN YOU ARE</p>
-              <h2>Today's workout</h2>
-            </div>
-            <span class="workout-tag">DAY 05</span>
-          </div>
-
-          <div class="workout-visual">
-            <div class="workout-glow"></div>
-            <div class="workout-figure" aria-hidden="true">🏋️</div>
-            <span class="visual-label">STRENGTH SERIES</span>
-          </div>
-
-          <div class="workout-details">
-            <h3>Upper Body Strength</h3>
-            <p>Build strength. Own every rep.</p>
-
-            <div class="workout-meta">
-              <span>◷ 45–60 min</span>
-              <span>▤ 6 exercises</span>
-              <span>⚡ +120 XP</span>
-            </div>
-
-            <button
-              type="button"
-              class="primary-button"
-              (click)="startWorkout()">
-              {{ workoutStarted ? 'Workout selected ✓' : 'Start workout' }}
-              <span>→</span>
-            </button>
-
-            @if (workoutStarted) {
-              <p class="action-note">
-                Workout selected. Connect your workout session page to begin
-                tracking exercises.
-              </p>
-            }
-          </div>
-        </article>
-
-        <article class="panel activity-panel">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">STAY ON TRACK</p>
-              <h2>Weekly activity</h2>
-            </div>
-            <span class="subtle-pill">This week</span>
-          </div>
-
-          <div class="activity-summary">
-            <div>
-              <strong>{{ weeklyMinutes }} <span>min</span></strong>
-              <p>Active this week</p>
-            </div>
-            <span class="activity-indicator">↗ Building momentum</span>
-          </div>
-
-          <div class="weekly-chart"
-               role="img"
-               aria-label="Weekly workout minutes chart">
-            @for (item of week; track item.day) {
-              <div class="chart-column">
-                <div class="chart-bar-area">
-                  <div
-                    class="chart-bar"
-                    [class.today-bar]="item.day === 'Sat'"
-                    [style.height.%]="item.minutes / 60 * 100">
-                  </div>
-                </div>
-                <span class="chart-day">{{ item.day }}</span>
-              </div>
-            }
-          </div>
-
-          <div class="chart-legend">
-            <span><i></i> Workout duration</span>
-            <span>Goal: 200 min</span>
-          </div>
-
-          <div class="activity-footer">
-            <div>
-              <strong>{{ weeklyWorkouts }}/{{ weeklyWorkoutGoal }}</strong>
-              <span>Weekly goal</span>
-            </div>
-            <div class="footer-progress">
-              <div class="progress-track">
-                <div class="progress-fill"
-                     [style.width.%]="weeklyProgress"></div>
-              </div>
-            </div>
-          </div>
-        </article>
-      </section>
-
-      <!-- Missions and recent activity -->
-      <section class="bottom-grid">
-
-        <article class="panel missions-panel">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">SMALL STEPS. BIG RESULTS.</p>
-              <h2>Daily missions</h2>
-            </div>
-            <button type="button" class="text-button"
-                    (click)="selectNav('Missions')">
-              View all →
-            </button>
-          </div>
-
-          <div class="mission-list">
-            @for (mission of missions; track mission.title) {
-              <div class="mission-item">
-                <div class="mission-icon">{{ mission.icon }}</div>
-
-                <div class="mission-info">
-                  <div class="mission-title-row">
-                    <strong>{{ mission.title }}</strong>
-                    <span>+{{ mission.xp }} XP</span>
-                  </div>
-                  <p>{{ mission.description }}</p>
-
-                  <div class="mission-progress-row">
-                    <div class="progress-track">
-                      <div
-                        class="progress-fill"
-                        [style.width.%]="mission.progress / mission.target * 100">
-                      </div>
-                    </div>
-                    <small>
-                      {{ mission.progress }}/{{ mission.target }}
-                    </small>
-                  </div>
-                </div>
-              </div>
-            }
-          </div>
-        </article>
-
-        <article class="panel recent-panel">
-          <div class="panel-heading">
-            <div>
-              <p class="eyebrow">YOUR JOURNEY SO FAR</p>
-              <h2>Recent workouts</h2>
-            </div>
-            <button type="button" class="text-button"
-                    (click)="selectNav('Workouts')">
-              View all →
-            </button>
-          </div>
-
-          <div class="recent-list">
-            @for (activity of recentActivities; track activity.name) {
-              <div class="recent-item">
-                <div class="recent-icon">{{ activity.icon }}</div>
-                <div class="recent-info">
-                  <strong>{{ activity.name }}</strong>
-                  <p>{{ activity.details }}</p>
-                  <span>{{ activity.duration }}</span>
-                </div>
-                <span class="xp-earned">+{{ activity.xp }} XP</span>
-              </div>
-            }
-          </div>
-        </article>
-      </section>
-
-    } @else {
-      <!-- Placeholder for sections whose routes/features aren't built yet -->
-      <section class="empty-section panel">
-        <div class="empty-icon">✦</div>
-        <p class="eyebrow">FYNTRIVA WORKSPACE</p>
-        <h1>{{ activeNav }}</h1>
-        <p>
-          Your {{ activeNav.toLowerCase() }} experience is the next step
-          in your fitness journey.
-        </p>
-        <button type="button" class="primary-button"
-                (click)="selectNav('Dashboard')">
-          Back to dashboard <span>→</span>
-        </button>
-      </section>
-    }
+    <router-outlet></router-outlet>
 
     <footer class="dashboard-footer">
-      <span>© 2026 FYNTRIVA</span>
-      <span>Built for your next level. ✦</span>
+      <span>© 2026 FYNTRIVA</span><span>Built for your next level. ✦</span>
     </footer>
-
   </main>
+
+  @if (isOnboardingVisible) {
+    <div class="onboarding-backdrop">
+      <section class="onboarding-dialog" role="dialog" aria-modal="true"
+               aria-labelledby="onboarding-title" aria-describedby="onboarding-description">
+        <div class="onboarding-topline">
+          <span>WELCOME TO FYNTRIVA, {{ userName }}</span>
+          <button type="button" class="onboarding-close" aria-label="Skip onboarding" (click)="skipOnboarding()">×</button>
+        </div>
+        <div class="onboarding-progress" aria-label="Tour progress">
+          @for (step of onboardingSteps; track step.title; let index = $index) {
+            <span [class.current]="index === onboardingStepIndex" [class.complete]="index < onboardingStepIndex"></span>
+          }
+        </div>
+        <p class="onboarding-step-count">STEP {{ onboardingStepIndex + 1 }} OF {{ onboardingSteps.length }}</p>
+        <h2 id="onboarding-title">{{ onboardingStep.title }}</h2>
+        <p id="onboarding-description">{{ onboardingStep.description }}</p>
+        <div class="onboarding-actions">
+          <button type="button" class="onboarding-skip" (click)="skipOnboarding()">Skip tour</button>
+          <div class="onboarding-navigation">
+            @if (onboardingStepIndex > 0) {
+              <button type="button" class="onboarding-back" (click)="previousOnboardingStep()">Back</button>
+            }
+            <button type="button" class="onboarding-next" (click)="nextOnboardingStep()">
+              {{ onboardingStepIndex === onboardingSteps.length - 1 ? 'Start exploring' : 'Next' }}
+              @if (onboardingStepIndex < onboardingSteps.length - 1) { <span aria-hidden="true">→</span> }
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  }
+
+  @if (isFitnessProfileSetupVisible) {
+    <app-fitness-profile [setupMode]="true" (setupComplete)="completeFitnessProfileSetup()"></app-fitness-profile>
+  }
 </div>

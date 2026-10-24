@@ -1,45 +1,27 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID, inject } from '@angular/core';
+import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { ThemeService } from '../../shared/core/service/theme.service';
 import { AuthService } from '../../shared/core/service/auth.service';
-
-interface Mission {
-  title: string;
-  description: string;
-  xp: number;
-  progress: number;
-  target: number;
-  icon: string;
-}
-
-interface WorkoutActivity {
-  name: string;
-  details: string;
-  duration: string;
-  xp: number;
-  icon: string;
-}
+import { ProfileComponent } from './profile/profile.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink],
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss'
+  imports: [ProfileComponent, RouterLink, RouterOutlet],
+  templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {
+  private readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
+
   isDarkTheme = false;
+  isOnboardingVisible = false;
+  onboardingStepIndex = 0;
+  isFitnessProfileSetupVisible = false;
+  profileStorageErrorMessage = '';
+  private showProfileAfterTour = false;
 
-  userLevel = 8;
-  currentXp = 720;
-  nextLevelXp = 1000;
-  weeklyWorkouts = 4;
-  weeklyWorkoutGoal = 5;
-  streakDays = 6;
-  weeklyMinutes = 185;
-
-  activeNav = 'Dashboard';
-  workoutStarted = false;
   logoutErrorMessage = '';
 
   today = new Date();
@@ -52,64 +34,18 @@ export class HomeComponent implements OnInit {
     { label: 'Profile', icon: '♙' }
   ];
 
-  readonly week = [
-    { day: 'Mon', minutes: 35 },
-    { day: 'Tue', minutes: 50 },
-    { day: 'Wed', minutes: 0 },
-    { day: 'Thu', minutes: 45 },
-    { day: 'Fri', minutes: 25 },
-    { day: 'Sat', minutes: 30 },
-    { day: 'Sun', minutes: 0 }
-  ];
-
-  readonly missions: Mission[] = [
+  readonly onboardingSteps = [
     {
-      title: 'Consistency is key',
-      description: 'Complete 5 workouts this week',
-      xp: 100,
-      progress: 4,
-      target: 5,
-      icon: '🎯'
+      title: 'Your dashboard',
+      description: 'See your fitness overview, weekly activity, and progress at a glance.'
     },
     {
-      title: 'Keep moving',
-      description: 'Reach 200 active minutes',
-      xp: 75,
-      progress: 185,
-      target: 200,
-      icon: '⚡'
+      title: 'Your workouts',
+      description: 'Find your workout plan here and use Start workout when you are ready to train.'
     },
     {
-      title: 'Early bird',
-      description: 'Complete 3 morning workouts',
-      xp: 50,
-      progress: 2,
-      target: 3,
-      icon: '🌅'
-    }
-  ];
-
-  readonly recentActivities: WorkoutActivity[] = [
-    {
-      name: 'Upper Body Strength',
-      details: 'Chest, shoulders & triceps',
-      duration: '45 min',
-      xp: 85,
-      icon: '💪'
-    },
-    {
-      name: 'Leg Day',
-      details: 'Quads, hamstrings & calves',
-      duration: '50 min',
-      xp: 100,
-      icon: '🦵'
-    },
-    {
-      name: 'Pull Day',
-      details: 'Back & biceps',
-      duration: '40 min',
-      xp: 80,
-      icon: '🏋️'
+      title: 'Your goals',
+      description: 'Missions help you build consistency. Complete them to track your progress and earn XP.'
     }
   ];
 
@@ -121,32 +57,19 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.isDarkTheme = this.themeService.isDarkTheme();
+
+    if (this.isBrowser) {
+      if (!this.hasCompletedOnboarding()) {
+        this.showProfileAfterTour = !this.hasDismissedProfileSetup();
+        this.startOnboarding();
+      } else if (!this.hasDismissedProfileSetup()) {
+        this.isFitnessProfileSetupVisible = true;
+      }
+    }
   }
 
   get userName(): string {
     return this.authService.currentUser?.firstName || 'Athlete';
-  }
-
-  get xpProgress(): number {
-    if (this.nextLevelXp <= 0) {
-      return 0;
-    }
-
-    return Math.min(
-      100,
-      Math.round((this.currentXp / this.nextLevelXp) * 100)
-    );
-  }
-
-  get weeklyProgress(): number {
-    return Math.min(
-      100,
-      Math.round((this.weeklyWorkouts / this.weeklyWorkoutGoal) * 100)
-    );
-  }
-
-  get weeklyMinutesProgress(): number {
-    return Math.min(100, Math.round((this.weeklyMinutes / 200) * 100));
   }
 
   get greeting(): string {
@@ -167,8 +90,66 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  get activeNav(): string {
+    const route = this.router.url.split('?')[0].split('/').pop();
+    switch (route) {
+      case 'workouts': return 'Workouts';
+      case 'progress': return 'Progress';
+      case 'missions': return 'Missions';
+      case 'profile': return 'Profile';
+      default: return 'Dashboard';
+    }
+  }
+
   selectNav(label: string): void {
-    this.activeNav = label;
+    const route = label.toLowerCase();
+    void this.router.navigate(['/home', route === 'dashboard' ? 'dashboard' : route]);
+  }
+
+  get onboardingStep() {
+    return this.onboardingSteps[this.onboardingStepIndex];
+  }
+
+  get onboardingStorageKey(): string {
+    const userId = this.authService.currentUser?.id;
+    return userId === undefined
+      ? 'fyntriva-onboarding-complete'
+      : `fyntriva-onboarding-complete-${userId}`;
+  }
+
+  get profileSetupDismissedStorageKey(): string {
+    const userId = this.authService.currentUser?.id;
+    return userId === undefined
+      ? 'fyntriva-profile-setup-dismissed'
+      : `fyntriva-profile-setup-dismissed-${userId}`;
+  }
+
+  startOnboarding(): void {
+    this.onboardingStepIndex = 0;
+    this.isOnboardingVisible = true;
+  }
+
+  previousOnboardingStep(): void {
+    if (this.onboardingStepIndex > 0) {
+      this.onboardingStepIndex--;
+    }
+  }
+
+  nextOnboardingStep(): void {
+    if (this.onboardingStepIndex < this.onboardingSteps.length - 1) {
+      this.onboardingStepIndex++;
+      return;
+    }
+
+    this.finishOnboarding();
+  }
+
+  skipOnboarding(): void {
+    this.finishOnboarding();
+  }
+
+  completeFitnessProfileSetup(): void {
+    this.isFitnessProfileSetupVisible = false;
   }
 
   setTheme(isDark: boolean): void {
@@ -180,11 +161,6 @@ export class HomeComponent implements OnInit {
     this.setTheme(!this.isDarkTheme);
   }
 
-  startWorkout(): void {
-    // Replace with navigation to the real workout session page.
-    this.workoutStarted = true;
-  }
-
   logout(): void {
     this.logoutErrorMessage = '';
     this.authService.logoutFromServer().subscribe({
@@ -194,5 +170,42 @@ export class HomeComponent implements OnInit {
           'You were signed out on this device, but the server could not confirm sign-out.';
       }
     });
+  }
+
+  private hasCompletedOnboarding(): boolean {
+    try {
+      return localStorage.getItem(this.onboardingStorageKey) === 'true';
+    } catch {
+      this.profileStorageErrorMessage =
+        'Browser storage is unavailable. Your onboarding and fitness profile may not be remembered.';
+      return false;
+    }
+  }
+
+  private hasDismissedProfileSetup(): boolean {
+    try {
+      return localStorage.getItem(this.profileSetupDismissedStorageKey) === 'true';
+    } catch {
+      this.profileStorageErrorMessage =
+        'Browser storage is unavailable. Your onboarding and fitness profile may not be remembered.';
+      return false;
+    }
+  }
+
+  private finishOnboarding(): void {
+    if (this.isBrowser) {
+      try {
+        localStorage.setItem(this.onboardingStorageKey, 'true');
+      } catch {
+        this.profileStorageErrorMessage =
+          'Browser storage is unavailable. Your onboarding progress may not be remembered.';
+      }
+    }
+
+    this.isOnboardingVisible = false;
+    if (this.showProfileAfterTour && !this.hasDismissedProfileSetup()) {
+      this.isFitnessProfileSetupVisible = true;
+    }
+    this.showProfileAfterTour = false;
   }
 }

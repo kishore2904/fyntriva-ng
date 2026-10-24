@@ -1,0 +1,137 @@
+<section class="welcome-section">
+  <div>
+    <p class="eyebrow">YOUR FITNESS OVERVIEW</p>
+    <h1>{{ greeting }}, {{ userName }} <span>✦</span></h1>
+    <p class="welcome-subtitle">Every rep counts. Let's make today a great one.</p>
+  </div>
+  <div class="level-card">
+    <div class="level-emblem">⚡</div>
+    <div class="level-info">
+      <span>YOUR CURRENT RANK</span>
+      <strong>Level {{ userLevel }} <span>ATHLETE</span></strong>
+      <div class="progress-track"><div class="progress-fill" [style.width.%]="xpProgress"></div></div>
+      <small>{{ currentXp }} / {{ nextLevelXp }} XP to next level</small>
+    </div>
+  </div>
+</section>
+
+<section class="stats-grid" aria-label="Fitness summary">
+  <article class="stat-card">
+    <div class="stat-top"><span class="stat-icon purple">⚡</span><span class="stat-label">TOTAL XP</span></div>
+    <div class="stat-value">{{ currentXp }} <span>XP</span></div>
+    <p class="stat-description">Keep earning experience</p>
+    <div class="mini-progress"><div class="progress-fill" [style.width.%]="xpProgress"></div></div>
+  </article>
+  <article class="stat-card">
+    <div class="stat-top"><span class="stat-icon orange">♨</span><span class="stat-label">WORKOUT STREAK</span></div>
+    <div class="stat-value">{{ streakDays }} <span>days</span></div>
+    <p class="stat-description">Consistency builds results</p>
+    <div class="streak-dots" aria-label="Six day streak">
+      @for (day of [1, 2, 3, 4, 5, 6, 7]; track day) {
+        <span [class.completed]="day <= streakDays"></span>
+      }
+    </div>
+  </article>
+  <article class="stat-card">
+    <div class="stat-top"><span class="stat-icon green">✓</span><span class="stat-label">WEEKLY WORKOUTS</span></div>
+    <div class="stat-value">{{ weeklyWorkouts }}<span>/{{ weeklyWorkoutGoal }}</span></div>
+    <p class="stat-description">Workouts completed this week</p>
+    <div class="mini-progress"><div class="progress-fill green-fill" [style.width.%]="weeklyProgress"></div></div>
+  </article>
+  <article class="stat-card">
+    <div class="stat-top"><span class="stat-icon blue">◷</span><span class="stat-label">ACTIVE MINUTES</span></div>
+    <div class="stat-value">{{ weeklyMinutes }} <span>min</span></div>
+    <p class="stat-description">Your weekly movement goal</p>
+    <div class="mini-progress"><div class="progress-fill blue-fill" [style.width.%]="weeklyMinutesProgress"></div></div>
+  </article>
+</section>
+
+<section class="middle-grid">
+  <article class="panel workout-panel">
+    <div class="panel-heading">
+      <div><p class="eyebrow">READY WHEN YOU ARE</p><h2>Today's workout</h2></div>
+      <span class="workout-tag">DAY 05</span>
+    </div>
+    <div class="workout-visual">
+      <div class="workout-glow"></div>
+      <div class="workout-figure" aria-hidden="true">🏋️</div>
+      <span class="visual-label">STRENGTH SERIES</span>
+    </div>
+    <div class="workout-details">
+      <h3>Upper Body Strength</h3>
+      <p>Build strength. Own every rep.</p>
+      <div class="workout-meta"><span>◷ 45–60 min</span><span>▤ 6 exercises</span><span>⚡ +120 XP</span></div>
+      <button type="button" class="primary-button" (click)="startWorkout()">
+        {{ workoutStarted ? 'Workout selected ✓' : 'Start workout' }} <span>→</span>
+      </button>
+      @if (workoutStarted) {
+        <p class="action-note">Workout selected. Connect your workout session page to begin tracking exercises.</p>
+      }
+    </div>
+  </article>
+
+  <article class="panel activity-panel">
+    <div class="panel-heading">
+      <div><p class="eyebrow">STAY ON TRACK</p><h2>Weekly activity</h2></div>
+      <span class="subtle-pill">This week</span>
+    </div>
+    <div class="activity-summary">
+      <div><strong>{{ weeklyMinutes }} <span>min</span></strong><p>Active this week</p></div>
+      <span class="activity-indicator">↗ Building momentum</span>
+    </div>
+    <div class="weekly-chart" role="img" aria-label="Weekly workout minutes chart">
+      @for (item of week; track item.day) {
+        <div class="chart-column">
+          <div class="chart-bar-area">
+            <div class="chart-bar" [class.today-bar]="item.day === 'Sat'" [style.height.%]="item.minutes / 60 * 100"></div>
+          </div>
+          <span class="chart-day">{{ item.day }}</span>
+        </div>
+      }
+    </div>
+    <div class="chart-legend"><span><i></i> Workout duration</span><span>Goal: 200 min</span></div>
+    <div class="activity-footer">
+      <div><strong>{{ weeklyWorkouts }}/{{ weeklyWorkoutGoal }}</strong><span>Weekly goal</span></div>
+      <div class="footer-progress"><div class="progress-track"><div class="progress-fill" [style.width.%]="weeklyProgress"></div></div></div>
+    </div>
+  </article>
+</section>
+
+<section class="bottom-grid">
+  <article class="panel missions-panel">
+    <div class="panel-heading">
+      <div><p class="eyebrow">SMALL STEPS. BIG RESULTS.</p><h2>Daily missions</h2></div>
+      <a class="text-button" routerLink="/home/missions">View all →</a>
+    </div>
+    <div class="mission-list">
+      @for (mission of missions; track mission.title) {
+        <div class="mission-item">
+          <div class="mission-icon">{{ mission.icon }}</div>
+          <div class="mission-info">
+            <div class="mission-title-row"><strong>{{ mission.title }}</strong><span>+{{ mission.xp }} XP</span></div>
+            <p>{{ mission.description }}</p>
+            <div class="mission-progress-row">
+              <div class="progress-track"><div class="progress-fill" [style.width.%]="mission.progress / mission.target * 100"></div></div>
+              <small>{{ mission.progress }}/{{ mission.target }}</small>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </article>
+  <article class="panel recent-panel">
+    <div class="panel-heading">
+      <div><p class="eyebrow">YOUR JOURNEY SO FAR</p><h2>Recent workouts</h2></div>
+      <a class="text-button" routerLink="/home/workouts">View all →</a>
+    </div>
+    <div class="recent-list">
+      @for (activity of recentActivities; track activity.name) {
+        <div class="recent-item">
+          <div class="recent-icon">{{ activity.icon }}</div>
+          <div class="recent-info"><strong>{{ activity.name }}</strong><p>{{ activity.details }}</p><span>{{ activity.duration }}</span></div>
+          <span class="xp-earned">+{{ activity.xp }} XP</span>
+        </div>
+      }
+    </div>
+  </article>
+</section>

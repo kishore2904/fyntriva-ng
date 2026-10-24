@@ -1,0 +1,245 @@
+.fitness-setup-dialog {
+  width: min(100%, 700px);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+.fitness-setup-dialog > .fitness-setup-description {
+  min-height: 0;
+  margin-bottom: 20px;
+}
+
+.fitness-profile-section {
+  padding: clamp(22px, 4vw, 36px);
+}
+
+.profile-privacy-note,
+.fitness-local-storage-note {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.profile-privacy-note {
+  max-width: 720px;
+  margin: 0 0 26px;
+}
+
+.fitness-local-storage-note {
+  margin: 20px 0;
+}
+
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.profile-choice-group {
+  padding: 0;
+  border: 0;
+}
+
+.profile-choice-group legend {
+  padding: 0;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profile-choice-group legend span {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.profile-choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.profile-choice {
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 9px;
+  color: var(--text-primary);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.profile-choice input {
+  accent-color: var(--accent);
+}
+
+.fitness-profile-form .profile-field {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.profile-field label {
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profile-field label span {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.profile-input {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--field-bg, var(--card-bg));
+}
+
+.profile-input input,
+.profile-input select {
+  min-width: 0;
+  height: 44px;
+  border: 0;
+  outline: 0;
+  color: var(--text-primary);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+}
+
+.profile-input input {
+  flex: 1;
+  padding: 0 12px;
+}
+
+.profile-input select,
+.profile-input > span {
+  padding: 0 12px;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.profile-input > span {
+  white-space: nowrap;
+}
+
+.profile-input:focus-within {
+  border-color: var(--accent);
+}
+
+.profile-select {
+  width: 100%;
+  height: 46px;
+  padding: 0 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  outline: 0;
+  color: var(--text-primary);
+  background: var(--field-bg, var(--card-bg));
+  font: inherit;
+  font-size: 13px;
+}
+
+.profile-select:focus {
+  border-color: var(--accent);
+}
+
+.profile-field-error,
+.profile-error-message {
+  color: #c83c48;
+  font-size: 11px;
+}
+
+.profile-error-message {
+  margin: 12px 0;
+}
+
+.profile-status-message {
+  margin: 0 0 16px;
+  color: #23834a;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profile-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.profile-skip-button,
+.text-button {
+  border: 0;
+  color: var(--text-secondary);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.text-button {
+  color: var(--accent);
+}
+
+.profile-save-button {
+  min-height: 44px;
+}
+
+.fitness-profile-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0;
+}
+
+.fitness-profile-summary div {
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.fitness-profile-summary dt {
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+
+.fitness-profile-summary dd {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+@media (max-width: 650px) {
+  .profile-form-grid,
+  .fitness-profile-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-choice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .fitness-setup-dialog {
+    padding: 20px;
+  }
+
+  .profile-form-actions {
+    justify-content: space-between;
+    gap: 8px;
+  }
+}
