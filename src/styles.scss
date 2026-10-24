@@ -30,6 +30,12 @@ body {
   --accent: #6548e8;
   --accent-hover: #5137cf;
   --field-bg: #ffffff;
+  --accent-light: color-mix(in srgb, var(--accent) 14%, var(--card-bg));
+  --sidebar-bg: var(--card-bg);
+  --text: var(--text-primary);
+  --muted: var(--text-secondary);
+  --border: var(--border-color);
+  --track: var(--border-color);
 }
 
 /* Dark theme */

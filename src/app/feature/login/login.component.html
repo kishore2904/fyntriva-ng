@@ -78,70 +78,82 @@
       <h2>Welcome back</h2>
       <p class="subtitle">Continue your fitness journey.</p>
 
-      <form (ngSubmit)="onLogin()" #loginForm="ngForm">
+      <form (ngSubmit)="onLogin()" [formGroup]="loginForm">
         <div class="form-group">
           <label for="email">Email address</label>
 
           <div class="input-wrapper">
             <span class="input-icon" aria-hidden="true">✉</span>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="you@example.com"
-              autocomplete="email"
-              required
-              email
-              [(ngModel)]="email"
-              #emailInput="ngModel"
-            />
+             <input
+        id="email"
+        type="email"
+        formControlName="email"
+        placeholder="you@example.com"
+        autocomplete="email"
+        [attr.aria-invalid]="email?.invalid && email?.touched"
+        aria-describedby="email-error"
+      />
           </div>
-
-          @if (emailInput.invalid && emailInput.touched) {
-            <small class="error-message">
-              Enter a valid email address.
-            </small>
-          }
+@if (email?.touched && email?.hasError('required')) {
+      <small id="email-error" class="error-message">
+        Email address is required.
+      </small>
+    } @else if (email?.touched && email?.hasError('email')) {
+      <small id="email-error" class="error-message">
+        Enter a valid email address.
+      </small>
+    } @else if (email?.touched && email?.hasError('maxlength')) {
+      <small id="email-error" class="error-message">
+        Email address is too long.
+      </small>
+    }
+          
         </div>
 
-        <div class="form-group">
-          <label for="password">Password</label>
+<div class="form-group">
+    <label for="password">Password</label>
 
-          <div class="input-wrapper">
-            <span class="input-icon" aria-hidden="true">🔒</span>
-            <input
-              id="password"
-              name="password"
-              [type]="showPassword ? 'text' : 'password'"
-              placeholder="Enter your password"
-              autocomplete="current-password"
-              required
-              [(ngModel)]="password"
-              #passwordInput="ngModel"
-            />
+    <div class="input-wrapper">
+      <span class="input-icon" aria-hidden="true">🔒</span>
 
-            <button
-              type="button"
-              class="password-toggle"
-              (click)="togglePassword()"
-              [attr.aria-label]="
-                showPassword ? 'Hide password' : 'Show password'
-              "
-            >
-              {{ showPassword ? 'Hide' : 'Show' }}
-            </button>
-          </div>
+      <input
+        id="password"
+        [type]="showPassword ? 'text' : 'password'"
+        formControlName="password"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+        [attr.aria-invalid]="password?.invalid && password?.touched"
+        aria-describedby="password-error"
+      />
 
-          @if (passwordInput.invalid && passwordInput.touched) {
-            <small class="error-message">
-              Password is required.
-            </small>
-          }
+      <button
+        type="button"
+        class="password-toggle"
+        (click)="togglePassword()"
+        [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+      >
+        {{ showPassword ? 'Hide' : 'Show' }}
+      </button>
+    </div>
 
-          <div class="forgot-password">
-            <a routerLink="/forgot-password">Forgot password?</a>
-          </div>
-        </div>
+    @if (password?.touched && password?.hasError('required')) {
+      <small id="password-error" class="error-message">
+        Password is required.
+      </small>
+    } @else if (password?.touched && password?.hasError('minlength')) {
+      <small id="password-error" class="error-message">
+        Password must contain at least 8 characters.
+      </small>
+    } @else if (password?.touched && password?.hasError('maxlength')) {
+      <small id="password-error" class="error-message">
+        Password cannot exceed 128 characters.
+      </small>
+    }
+
+    <div class="forgot-password">
+      <a routerLink="/forgot-password">Forgot password?</a>
+    </div>
+  </div>
 
         <button
           type="submit"

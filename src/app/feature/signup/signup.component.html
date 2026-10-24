@@ -1,0 +1,259 @@
+<div class="signup-page" [class.dark-theme]="isDarkTheme">
+
+  <section class="brand-panel">
+    <a class="brand-logo" routerLink="/">
+      <span>FYN</span>TRIVA
+    </a>
+
+    <div class="brand-content">
+      <h1>Your Journey.<br />Your Strength.</h1>
+
+      <p class="brand-description">
+        Create your account, track your workouts,
+        and build a stronger version of yourself.
+      </p>
+
+      <div class="benefits">
+        <div class="benefit">
+          <div class="benefit-icon">🏋️</div>
+          <div>
+            <h3>Train Smarter</h3>
+            <p>Build consistency with structured workouts.</p>
+          </div>
+        </div>
+
+        <div class="benefit">
+          <div class="benefit-icon">📈</div>
+          <div>
+            <h3>Track Your Growth</h3>
+            <p>See your progress and celebrate milestones.</p>
+          </div>
+        </div>
+
+        <div class="benefit">
+          <div class="benefit-icon">🏆</div>
+          <div>
+            <h3>Level Up</h3>
+            <p>Turn fitness goals into achievements.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="landscape" aria-hidden="true">
+      <div class="sun"></div>
+      <div class="mountain mountain-back"></div>
+      <div class="mountain mountain-front"></div>
+      <div class="landscape-water"></div>
+    </div>
+  </section>
+
+  <main class="signup-panel">
+
+    <div class="theme-switch">
+      <button
+        type="button"
+        [class.active]="!isDarkTheme"
+        [attr.aria-pressed]="!isDarkTheme"
+        aria-label="Light theme"
+        (click)="setTheme(false)">
+        ☀
+      </button>
+
+      <button
+        type="button"
+        [class.active]="isDarkTheme"
+        [attr.aria-pressed]="isDarkTheme"
+        aria-label="Dark theme"
+        (click)="setTheme(true)">
+        ☾
+      </button>
+    </div>
+
+    <section class="signup-card">
+
+      <a class="card-logo" routerLink="/">
+        <span>FYN</span>TRIVA
+      </a>
+
+      <h2>Create your account</h2>
+      <p class="subtitle">Start your fitness journey today.</p>
+
+      <form [formGroup]="signupForm" (ngSubmit)="onSignup()"
+            novalidate>
+
+        <!-- Full name -->
+        <div class="form-group">
+          <label for="fullName">Full name</label>
+
+          <div class="input-wrapper">
+            <span class="input-icon" aria-hidden="true">♙</span>
+            <input
+              id="fullName"
+              type="text"
+              formControlName="fullName"
+              placeholder="Enter your full name"
+              autocomplete="name"
+              [attr.aria-invalid]="fullName?.invalid && fullName?.touched"
+            />
+          </div>
+
+          @if (fullName?.touched && fullName?.hasError('required')) {
+            <small class="error-message">Full name is required.</small>
+          } @else if (fullName?.touched && fullName?.hasError('minlength')) {
+            <small class="error-message">
+              Name must contain at least 2 characters.
+            </small>
+          } @else if (fullName?.touched && fullName?.hasError('maxlength')) {
+            <small class="error-message">Name is too long.</small>
+          } @else if (fullName?.touched && fullName?.hasError('pattern')) {
+            <small class="error-message">
+              Enter a valid name using letters, spaces, hyphens or apostrophes.
+            </small>
+          }
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Email address</label>
+
+          <div class="input-wrapper">
+            <span class="input-icon" aria-hidden="true">✉</span>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              placeholder="you@example.com"
+              autocomplete="email"
+              [attr.aria-invalid]="email?.invalid && email?.touched"
+            />
+          </div>
+
+          @if (email?.touched && email?.hasError('required')) {
+            <small class="error-message">Email is required.</small>
+          } @else if (email?.touched && email?.hasError('email')) {
+            <small class="error-message">Enter a valid email address.</small>
+          } @else if (email?.touched && email?.hasError('maxlength')) {
+            <small class="error-message">Email address is too long.</small>
+          }
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">Password</label>
+
+          <div class="input-wrapper">
+            <span class="input-icon" aria-hidden="true">🔒</span>
+            <input
+              id="password"
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="Create a password"
+              autocomplete="new-password"
+              [attr.aria-invalid]="password?.invalid && password?.touched"
+            />
+
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="togglePassword()"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+              {{ showPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+
+          @if (password?.value) {
+            <div class="strength-section">
+              <div class="strength-track">
+                <div
+                  class="strength-fill"
+                  [style.width]="(passwordStrength / 4 * 100) + '%'">
+                </div>
+              </div>
+              <small>
+                Password strength:
+                {{
+                  passwordStrength <= 1 ? 'Weak' :
+                  passwordStrength === 2 ? 'Fair' :
+                  passwordStrength === 3 ? 'Good' : 'Strong'
+                }}
+              </small>
+            </div>
+          }
+
+          @if (password?.touched && password?.hasError('required')) {
+            <small class="error-message">Password is required.</small>
+          } @else if (password?.touched && password?.hasError('minlength')) {
+            <small class="error-message">
+              Use at least 8 characters.
+            </small>
+          } @else if (password?.touched && password?.hasError('maxlength')) {
+            <small class="error-message">
+              Password cannot exceed 128 characters.
+            </small>
+          } @else if (password?.touched && password?.hasError('pattern')) {
+            <small class="error-message">
+              Include uppercase, lowercase, a number and a special character.
+              Spaces are not allowed.
+            </small>
+          }
+        </div>
+
+        <!-- Confirm password -->
+        <div class="form-group">
+          <label for="confirmPassword">Confirm password</label>
+
+          <div class="input-wrapper">
+            <span class="input-icon" aria-hidden="true">🔒</span>
+            <input
+              id="confirmPassword"
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              formControlName="confirmPassword"
+              placeholder="Re-enter your password"
+              autocomplete="new-password"
+              [attr.aria-invalid]="
+                (confirmPassword?.invalid || signupForm.hasError('passwordMismatch'))
+                && confirmPassword?.touched
+              "
+            />
+
+            <button
+              type="button"
+              class="password-toggle"
+              (click)="toggleConfirmPassword()"
+              [attr.aria-label]="showConfirmPassword ? 'Hide password' : 'Show password'">
+              {{ showConfirmPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+
+          @if (confirmPassword?.touched && confirmPassword?.hasError('required')) {
+            <small class="error-message">
+              Please confirm your password.
+            </small>
+          } @else if (
+            confirmPassword?.touched &&
+            signupForm.hasError('passwordMismatch')
+          ) {
+            <small class="error-message">
+              Passwords do not match.
+            </small>
+          }
+        </div>
+
+        <button
+          type="submit"
+          class="sign-up-button"
+          [disabled]="signupForm.invalid">
+          Create account
+        </button>
+
+      </form>
+
+      <p class="signup-prompt">
+        Already have an account?
+        <a routerLink="/login">Sign in</a>
+      </p>
+
+    </section>
+  </main>
+</div>
