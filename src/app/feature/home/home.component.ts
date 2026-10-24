@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ThemeService } from '../../shared/core/service/theme.service';
+import { AuthService } from '../../shared/core/service/auth.service';
 
 interface Mission {
   title: string;
@@ -29,8 +30,6 @@ interface WorkoutActivity {
 export class HomeComponent implements OnInit {
   isDarkTheme = false;
 
-  // Replace with the authenticated user's profile later.
-  userName = 'Athlete';
   userLevel = 8;
   currentXp = 720;
   nextLevelXp = 1000;
@@ -41,6 +40,7 @@ export class HomeComponent implements OnInit {
 
   activeNav = 'Dashboard';
   workoutStarted = false;
+  logoutErrorMessage = '';
 
   today = new Date();
 
@@ -115,11 +115,16 @@ export class HomeComponent implements OnInit {
 
   constructor(
     private themeService: ThemeService,
-    private router: Router
+    private router: Router,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.isDarkTheme = this.themeService.isDarkTheme();
+  }
+
+  get userName(): string {
+    return this.authService.currentUser?.firstName || 'Athlete';
   }
 
   get xpProgress(): number {
@@ -181,7 +186,13 @@ export class HomeComponent implements OnInit {
   }
 
   logout(): void {
-    // Connect this to your authentication service when implemented.
-    this.router.navigate(['/login']);
+    this.logoutErrorMessage = '';
+    this.authService.logoutFromServer().subscribe({
+      next: () => void this.router.navigate(['/login']),
+      error: () => {
+        this.logoutErrorMessage =
+          'You were signed out on this device, but the server could not confirm sign-out.';
+      }
+    });
   }
 }

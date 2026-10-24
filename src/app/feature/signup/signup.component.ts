@@ -7,8 +7,12 @@ import {
   ValidationErrors,
   Validators
 } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { RouterLink } from '@angular/router';
 import { ThemeService } from '../../shared/core/service/theme.service';
+import { SignupRequest, SignupService } from '../../shared/core/service/signup.service';
+
+const NAME_PATTERN = /^[\p{L}\p{M}]+(?:[ '\u2019-][\p{L}\p{M}]+)*$/u;
 
 @Component({
   selector: 'app-signup',
@@ -22,12 +26,16 @@ export class SignupComponent implements OnInit {
   signupForm!: FormGroup;
   isDarkTheme = false;
   submitted = false;
+  isSubmitting = false;
+  signupErrorMessage = '';
+  signupSuccessMessage = '';
   showPassword = false;
   showConfirmPassword = false;
 
   constructor(
     private fb: FormBuilder,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private signupService: SignupService
   ) {}
 
   ngOnInit(): void {
@@ -35,13 +43,22 @@ export class SignupComponent implements OnInit {
 
     this.signupForm = this.fb.group(
       {
-        fullName: [
+        firstName: [
           '',
           [
             Validators.required,
             Validators.minLength(2),
             Validators.maxLength(100),
-            Validators.pattern(/^[\p{L}\p{M}]+(?:[ '\u2019-][\p{L}\p{M}]+)*$/u)
+            Validators.pattern(NAME_PATTERN)
+          ]
+        ],
+        lastName: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(2),
+            Validators.maxLength(100),
+            Validators.pattern(NAME_PATTERN)
           ]
         ],
         email: [
@@ -71,8 +88,12 @@ export class SignupComponent implements OnInit {
     );
   }
 
-  get fullName() {
-    return this.signupForm.get('fullName');
+  get firstName() {
+    return this.signupForm.get('firstName');
+  }
+
+  get lastName() {
+    return this.signupForm.get('lastName');
   }
 
   get email() {
@@ -125,24 +146,80 @@ export class SignupComponent implements OnInit {
   onSignup(): void {
     this.submitted = true;
 
-    if (this.signupForm.invalid) {
+    if (
+      this.signupForm.invalid ||
+      this.isSubmitting ||
+      this.signupSuccessMessage
+    ) {
       this.signupForm.markAllAsTouched();
       return;
     }
 
-    const { fullName, email, password } = this.signupForm.getRawValue();
-
-    const signupRequest = {
-      fullName: fullName.trim(),
+    const { firstName, lastName, email, password } =
+      this.signupForm.getRawValue();
+    const request: SignupRequest = {
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
       email: email.trim(),
       password
     };
 
-    // Next step: send signupRequest to the Spring Boot API.
-    console.log('Signup form is valid:', {
-      ...signupRequest,
-      password: '[REDACTED]'
+    this.signupErrorMessage = '';
+    this.isSubmitting = true;
+
+    this.signupService.signup(request).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        this.signupSuccessMessage =
+          'Your account was created successfully. You can now sign in.';
+        this.signupForm.reset();
+        this.signupForm.disable();
+      },
+      error: (error: unknown) => {
+        this.isSubmitting = false;
+        this.signupErrorMessage = this.getSignupErrorMessage(error);
+      }
     });
+  }
+
+  private getSignupErrorMessage(error: unknown): string {
+    if (!(error instanceof HttpErrorResponse)) {
+      return 'Account creation failed. Please try again later.';
+    }
+
+    if (error.status === 0) {
+      return 'Unable to reach the signup service. Check your connection and try again.';
+    }
+
+    const responseMessage = this.getResponseMessage(error.error);
+    if (
+      error.status === 409 ||
+      /already exists|already registered|duplicate|email.{0,30}(exists|registered|taken)|unique constraint/i
+        .test(responseMessage)
+    ) {
+      return 'An account with this email address already exists.';
+    }
+
+    if (error.status === 400) {
+      return 'The signup details were rejected. Check your information and try again.';
+    }
+
+    return 'Account creation failed. Please try again later.';
+  }
+
+  private getResponseMessage(body: unknown): string {
+    if (typeof body === 'string') {
+      return body;
+    }
+
+    if (body && typeof body === 'object') {
+      const response = body as Record<string, unknown>;
+      return [response['message'], response['error'], response['detail']]
+        .filter((value): value is string => typeof value === 'string')
+        .join(' ');
+    }
+
+    return '';
   }
 
   setTheme(isDark: boolean): void {

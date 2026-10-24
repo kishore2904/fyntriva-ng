@@ -76,39 +76,81 @@
         <span>FYN</span>TRIVA
       </a>
 
+      @if (signupSuccessMessage) {
+        <div class="signup-notification success-notification" role="status">
+          <span class="notification-icon" aria-hidden="true">✓</span>
+          <p>{{ signupSuccessMessage }}</p>
+        </div>
+      } @else if (signupErrorMessage) {
+        <div class="signup-notification error-notification" role="alert">
+          <span class="notification-icon" aria-hidden="true">!</span>
+          <p>{{ signupErrorMessage }}</p>
+        </div>
+      }
+
       <h2>Create your account</h2>
       <p class="subtitle">Start your fitness journey today.</p>
 
       <form [formGroup]="signupForm" (ngSubmit)="onSignup()"
             novalidate>
 
-        <!-- Full name -->
+        <!-- Names -->
         <div class="form-group">
-          <label for="fullName">Full name</label>
+          <label for="firstName">First name</label>
 
           <div class="input-wrapper">
             <span class="input-icon" aria-hidden="true">♙</span>
             <input
-              id="fullName"
+              id="firstName"
               type="text"
-              formControlName="fullName"
-              placeholder="Enter your full name"
-              autocomplete="name"
-              [attr.aria-invalid]="fullName?.invalid && fullName?.touched"
+              formControlName="firstName"
+              placeholder="Enter your first name"
+              autocomplete="given-name"
+              [attr.aria-invalid]="firstName?.invalid && firstName?.touched"
             />
           </div>
 
-          @if (fullName?.touched && fullName?.hasError('required')) {
-            <small class="error-message">Full name is required.</small>
-          } @else if (fullName?.touched && fullName?.hasError('minlength')) {
+          @if (firstName?.touched && firstName?.hasError('required')) {
+            <small class="error-message">First name is required.</small>
+          } @else if (firstName?.touched && firstName?.hasError('minlength')) {
             <small class="error-message">
-              Name must contain at least 2 characters.
+              First name must contain at least 2 characters.
             </small>
-          } @else if (fullName?.touched && fullName?.hasError('maxlength')) {
-            <small class="error-message">Name is too long.</small>
-          } @else if (fullName?.touched && fullName?.hasError('pattern')) {
+          } @else if (firstName?.touched && firstName?.hasError('maxlength')) {
+            <small class="error-message">First name is too long.</small>
+          } @else if (firstName?.touched && firstName?.hasError('pattern')) {
             <small class="error-message">
-              Enter a valid name using letters, spaces, hyphens or apostrophes.
+              Enter a valid first name using letters, spaces, hyphens or apostrophes.
+            </small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last name</label>
+
+          <div class="input-wrapper">
+            <span class="input-icon" aria-hidden="true">♙</span>
+            <input
+              id="lastName"
+              type="text"
+              formControlName="lastName"
+              placeholder="Enter your last name"
+              autocomplete="family-name"
+              [attr.aria-invalid]="lastName?.invalid && lastName?.touched"
+            />
+          </div>
+
+          @if (lastName?.touched && lastName?.hasError('required')) {
+            <small class="error-message">Last name is required.</small>
+          } @else if (lastName?.touched && lastName?.hasError('minlength')) {
+            <small class="error-message">
+              Last name must contain at least 2 characters.
+            </small>
+          } @else if (lastName?.touched && lastName?.hasError('maxlength')) {
+            <small class="error-message">Last name is too long.</small>
+          } @else if (lastName?.touched && lastName?.hasError('pattern')) {
+            <small class="error-message">
+              Enter a valid last name using letters, spaces, hyphens or apostrophes.
             </small>
           }
         </div>
@@ -243,8 +285,8 @@
         <button
           type="submit"
           class="sign-up-button"
-          [disabled]="signupForm.invalid">
-          Create account
+          [disabled]="signupForm.invalid || isSubmitting || !!signupSuccessMessage">
+          {{ isSubmitting ? 'Creating account…' : 'Create account' }}
         </button>
 
       </form>

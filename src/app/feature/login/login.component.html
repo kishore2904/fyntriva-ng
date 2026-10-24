@@ -75,6 +75,13 @@
         <span>FYN</span>TRIVA
       </a>
 
+      @if (loginErrorMessage) {
+        <div class="login-notification" role="alert">
+          <span aria-hidden="true">!</span>
+          <p>{{ loginErrorMessage }}</p>
+        </div>
+      }
+
       <h2>Welcome back</h2>
       <p class="subtitle">Continue your fitness journey.</p>
 
@@ -158,9 +165,9 @@
         <button
           type="submit"
           class="sign-in-button"
-          [disabled]="loginForm.invalid"
+          [disabled]="loginForm.invalid || isSubmitting"
         >
-          Sign in
+          {{ isSubmitting ? 'Signing in…' : 'Sign in' }}
         </button>
       </form>
 

@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Router, RouterLink } from '@angular/router';
 import { ThemeService } from '../../shared/core/service/theme.service';
+import { AuthService } from '../../shared/core/service/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +18,8 @@ export class LoginComponent implements OnInit {
   showPassword: boolean = false;
 
   isDarkTheme: boolean = false;
+  isSubmitting = false;
+  loginErrorMessage = '';
 
   loginForm! : FormGroup;
   
@@ -28,7 +32,11 @@ export class LoginComponent implements OnInit {
   }
 
   constructor(
-    private fb : FormBuilder,private themeService: ThemeService) {}
+    private fb: FormBuilder,
+    private themeService: ThemeService,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.setTheme(this.themeService.isDarkTheme());
@@ -42,9 +50,44 @@ export class LoginComponent implements OnInit {
 
 
   onLogin(): void{
-    if(this.loginForm.valid){
-    console.log('Logon button clicked');
+    if (this.loginForm.invalid || this.isSubmitting) {
+      this.loginForm.markAllAsTouched();
+      return;
     }
+
+    const { email, password } = this.loginForm.getRawValue();
+    this.loginErrorMessage = '';
+    this.isSubmitting = true;
+
+    this.authService.login({
+      email: email.trim(),
+      password
+    }).subscribe({
+      next: () => {
+        this.isSubmitting = false;
+        void this.router.navigate(['/home']);
+      },
+      error: (error: unknown) => {
+        this.isSubmitting = false;
+        this.loginErrorMessage = this.getLoginErrorMessage(error);
+      }
+    });
+  }
+
+  private getLoginErrorMessage(error: unknown): string {
+    if (!(error instanceof HttpErrorResponse)) {
+      return 'Login failed. Please try again.';
+    }
+
+    if (error.status === 0) {
+      return 'Unable to reach the login service. Check your connection and try again.';
+    }
+
+    if (error.status === 401 || error.status === 403) {
+      return 'The email or password is incorrect.';
+    }
+
+    return 'Login failed. Please try again later.';
   }
 
   togglePassword(): void{

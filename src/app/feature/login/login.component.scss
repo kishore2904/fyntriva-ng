@@ -242,6 +242,50 @@
   box-shadow: 0 12px 45px rgb(25 29 55 / 6%);
 }
 
+.login-notification {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 13px 15px;
+  margin: 0 0 22px;
+  border: 1px solid rgb(220 53 69 / 25%);
+  border-radius: 13px;
+  color: #a92736;
+  background: rgb(255 232 235 / 82%);
+  box-shadow: 0 8px 24px rgb(220 53 69 / 7%);
+  backdrop-filter: blur(12px);
+
+  span {
+    display: grid;
+    flex: 0 0 23px;
+    width: 23px;
+    height: 23px;
+    place-items: center;
+    border-radius: 50%;
+    color: #ffffff;
+    background: #dc3545;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  p {
+    margin: 1px 0 0;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+  }
+}
+
+.dark-theme .login-notification {
+  border-color: rgb(255 120 136 / 25%);
+  color: #ffb5bd;
+  background: rgb(115 39 51 / 38%);
+
+  span {
+    background: #db5364;
+  }
+}
+
 .card-logo {
   margin-bottom: 30px;
   font-size: 24px;

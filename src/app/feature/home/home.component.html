@@ -50,6 +50,9 @@
 
   <!-- Main content -->
   <main class="main-content">
+    @if (logoutErrorMessage) {
+      <p class="action-note" role="alert">{{ logoutErrorMessage }}</p>
+    }
 
     <!-- Header -->
     <header class="topbar">
